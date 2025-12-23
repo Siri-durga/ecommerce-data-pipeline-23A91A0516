@@ -147,4 +147,8 @@ Sensitive credentials are never hardcoded
 ---
 
 # 
+## Docker Setup
+The project includes Docker Compose configuration for PostgreSQL and pipeline services.
+Database schemas are automatically initialized on first startup.
+
 
