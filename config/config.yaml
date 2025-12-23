@@ -5,6 +5,22 @@ database:
   user: ${POSTGRES_USER}
   password: ${POSTGRES_PASSWORD}
 
+data_generation:
+  customers: 1000
+  products: 500
+  transactions: 10000
+  transaction_items_min: 15000
+  transaction_items_max: 25000
+  start_date: "2023-01-01"
+  end_date: "2024-12-31"
+
 pipeline:
   batch_size: 1000
   log_level: INFO
+  retry_attempts: 3
+  timeout_seconds: 300
+
+bi_tool:
+  tool: "powerbi"  # options: tableau | powerbi
+  host: localhost
+  port: 5432
