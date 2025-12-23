@@ -1,0 +1,10 @@
+database:
+  host: ${POSTGRES_HOST}
+  port: ${POSTGRES_PORT}
+  name: ${POSTGRES_DB}
+  user: ${POSTGRES_USER}
+  password: ${POSTGRES_PASSWORD}
+
+pipeline:
+  batch_size: 1000
+  log_level: INFO
