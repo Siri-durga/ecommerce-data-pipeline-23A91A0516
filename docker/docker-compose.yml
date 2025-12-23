@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: ecommerce_postgres
+    environment:
+      POSTGRES_DB: ecommerce_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/ddl:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pipeline:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: ecommerce_pipeline
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ecommerce_db
+      DB_USER: admin
+      DB_PASSWORD: password
+    volumes:
+      - ../data:/app/data
+      - ../logs:/app/logs
+    command: python -c "print('Pipeline service started successfully')"
+
+volumes:
+  postgres_data:
