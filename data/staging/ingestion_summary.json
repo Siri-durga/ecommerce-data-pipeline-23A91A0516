@@ -1,0 +1,26 @@
+{
+    "ingestion_timestamp": "2025-12-24T15:15:11.558860",
+    "tables_loaded": {
+        "staging.customers": {
+            "rows_loaded": 1000,
+            "status": "success",
+            "error_message": null
+        },
+        "staging.products": {
+            "rows_loaded": 500,
+            "status": "success",
+            "error_message": null
+        },
+        "staging.transactions": {
+            "rows_loaded": 10000,
+            "status": "success",
+            "error_message": null
+        },
+        "staging.transaction_items": {
+            "rows_loaded": 30166,
+            "status": "success",
+            "error_message": null
+        }
+    },
+    "total_execution_time_seconds": 0.22
+}
