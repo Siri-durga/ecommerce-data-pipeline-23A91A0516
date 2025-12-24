@@ -81,3 +81,39 @@ WHERE cost >= price;
 SELECT COUNT(*) AS violations
 FROM production.transaction_items
 WHERE discount_percentage < 0 OR discount_percentage > 100;
+
+
+-- NULL checks
+SELECT 'customers.email' AS field, COUNT(*) 
+FROM staging.customers WHERE email IS NULL OR email = '';
+
+SELECT 'transactions.total_amount', COUNT(*)
+FROM staging.transactions WHERE total_amount IS NULL;
+
+
+-- Duplicate primary keys
+SELECT customer_id, COUNT(*) 
+FROM staging.customers
+GROUP BY customer_id
+HAVING COUNT(*) > 1;
+
+
+-- Orphan transactions
+SELECT COUNT(*) 
+FROM staging.transactions t
+LEFT JOIN staging.customers c
+ON t.customer_id = c.customer_id
+WHERE c.customer_id IS NULL;
+
+
+-- Invalid prices
+SELECT COUNT(*) 
+FROM staging.products
+WHERE price <= 0 OR cost < 0;
+
+
+-- Line total mismatch
+SELECT COUNT(*) 
+FROM staging.transaction_items
+WHERE line_total <> quantity * unit_price * (1 - discount/100.0);
+
