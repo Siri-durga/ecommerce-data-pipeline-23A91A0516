@@ -101,66 +101,67 @@ def main():
             overall_score -= 20
 
     # DATA VOLUME ANOMALY
-    if conn:
-        rows = fetch_all(conn, """
-    SELECT d.full_date, COUNT(f.sales_key)
-    FROM warehouse.fact_sales f
-    JOIN warehouse.dim_date d ON f.date_key = d.date_key
-    WHERE d.full_date >= CURRENT_DATE - INTERVAL '30 days'
-    GROUP BY d.full_date
-    ORDER BY d.full_date
-""")
+    # DATA VOLUME ANOMALY
+if conn:
+    rows = fetch_all(conn, """
+        SELECT d.full_date, COUNT(f.sales_key)
+        FROM warehouse.fact_sales f
+        JOIN warehouse.dim_date d ON f.date_key = d.date_key
+        WHERE d.full_date >= CURRENT_DATE - INTERVAL '30 days'
+        GROUP BY d.full_date
+        ORDER BY d.full_date
+    """)
 
-if not rows:
-    report["checks"]["data_volume_anomalies"] = {
-        "status": "critical",
-        "expected_range": "N/A",
-        "actual_count": 0,
-        "anomaly_detected": True,
-        "anomaly_type": "no_data"
-    }
+    if not rows:
+        report["checks"]["data_volume_anomalies"] = {
+            "status": "critical",
+            "expected_range": "N/A",
+            "actual_count": 0,
+            "anomaly_detected": True,
+            "anomaly_type": "no_data"
+        }
 
-    report["alerts"].append({
-        "severity": "critical",
-        "check": "data_volume_anomalies",
-        "message": "No transaction data found for last 30 days",
-        "timestamp": datetime.utcnow().isoformat()
-    })
-
-    overall_score -= 25
-
-else:
-    counts = [r[1] for r in rows[:-1]]
-    today_count = rows[-1][1]
-
-    mean = statistics.mean(counts) if counts else today_count
-    std = statistics.stdev(counts) if len(counts) > 1 else 0
-
-    upper = mean + (3 * std)
-    lower = mean - (3 * std)
-
-    anomaly = today_count > upper or today_count < lower
-
-    report["checks"]["data_volume_anomalies"] = {
-        "status": "anomaly_detected" if anomaly else "ok",
-        "expected_range": f"{int(lower)}-{int(upper)}",
-        "actual_count": today_count,
-        "anomaly_detected": anomaly,
-        "anomaly_type": (
-            "spike" if today_count > upper
-            else "drop" if today_count < lower
-            else None
-        )
-    }
-
-    if anomaly:
         report["alerts"].append({
-            "severity": "warning",
+            "severity": "critical",
             "check": "data_volume_anomalies",
-            "message": "Transaction volume anomaly detected",
+            "message": "No transaction data found for last 30 days",
             "timestamp": datetime.utcnow().isoformat()
         })
-        overall_score -= 15
+
+        overall_score -= 25
+
+    else:
+        historical_counts = [r[1] for r in rows[:-1]]
+        today_count = rows[-1][1]
+
+        mean = statistics.mean(historical_counts) if historical_counts else today_count
+        std = statistics.stdev(historical_counts) if len(historical_counts) > 1 else 0
+
+        upper = mean + (3 * std)
+        lower = max(0, mean - (3 * std))
+
+        anomaly = today_count > upper or today_count < lower
+
+        report["checks"]["data_volume_anomalies"] = {
+            "status": "anomaly_detected" if anomaly else "ok",
+            "expected_range": f"{int(lower)}-{int(upper)}",
+            "actual_count": today_count,
+            "anomaly_detected": anomaly,
+            "anomaly_type": (
+                "spike" if today_count > upper
+                else "drop" if today_count < lower
+                else None
+            )
+        }
+
+        if anomaly:
+            report["alerts"].append({
+                "severity": "warning",
+                "check": "data_volume_anomalies",
+                "message": "Transaction volume anomaly detected",
+                "timestamp": datetime.utcnow().isoformat()
+            })
+            overall_score -= 15
 
 
         mean = statistics.mean(counts)
