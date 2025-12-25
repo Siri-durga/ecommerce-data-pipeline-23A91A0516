@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 result = subprocess.run(
-    ["pytest", "--cov=scripts", "--cov-fail-under=70"],
+    [sys.executable, "-m", "pytest", "--cov=scripts", "--cov-fail-under=70"],
     text=True
 )
 
