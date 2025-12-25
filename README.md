@@ -6,149 +6,177 @@
 
 # \*\*Roll Number:\*\* 23A91A0516
 
-# \*\*Submission Date:\*\* 28 Dec 2025  
+# \*\*Submission Date:\*\* 29 Dec 2025  
 
 # 
 
-# \## Overview
+📌 Project Architecture
+This project implements an end-to-end E-Commerce Data Analytics Pipeline that processes raw transactional data into analytics-ready datasets and interactive BI dashboards.
 
-# This project implements an end-to-end ETL pipeline for an e-commerce analytics platform, covering data generation, ingestion, transformation, quality validation, warehousing, and BI reporting.
+Data Flow:
 
-# 
+graphql
+Copy code
+Raw CSV Data
+   ↓
+Staging Schema (PostgreSQL)
+   ↓
+Production Schema (Cleaned & Normalized)
+   ↓
+Warehouse Schema (Star Schema)
+   ↓
+Analytics Queries & Aggregates
+   ↓
+BI Dashboard (Power BI)
+🛠 Technology Stack
+Layer	Technology
+Data Generation	Python, Faker
+Database	PostgreSQL
+ETL / Transformation	Python (Pandas, psycopg2)
+Orchestration	Python Scheduler
+Monitoring	Python (Custom Monitoring Scripts)
+BI Tool	Power BI Desktop
+Containerization	Docker
+Testing	Pytest, pytest-cov
 
-# ---
+📁 Project Structure
+kotlin
+Copy code
+ecommerce-data-pipeline/
+├── data/
+│   ├── raw/
+│   ├── staging/
+│   └── processed/
+├── scripts/
+│   ├── data_generation/
+│   ├── ingestion/
+│   ├── transformation/
+│   ├── monitoring/
+│   └── scheduler.py
+├── sql/
+│   ├── ddl/
+│   └── queries/
+├── dashboards/
+│   ├── powerbi/
+│   └── screenshots/
+├── tests/
+├── docs/
+├── logs/
+└── README.md
+⚙️ Setup Instructions
+Install Python 3.10+
 
-# 
+Install PostgreSQL
 
-# \## Prerequisites
+Clone repository
 
-# Ensure the following are installed on your system:
+bash
+Copy code
+git clone <repo-url>
+cd ecommerce-data-pipeline
+Install dependencies
 
-# 
-
-# \- Python 3.8+
-
-# \- PostgreSQL 12+
-
-# \- Docker \& Docker Compose
-
-# \- Git
-
-# \- Tableau Public OR Power BI Desktop (Free version)
-
-# 
-
-# ---
-
-# 
-
-# \## Installation Steps
-
-# 
-
-# 1\. Clone the repository:
-
-# &nbsp;  ```bash
-
-# &nbsp;  git clone https://github.com/<username>/ecommerce-data-pipeline-<roll-number>.git
-
-# &nbsp;  cd ecommerce-data-pipeline-23A91A0516
-
-Install Python dependencies:
-
-
-
+bash
+Copy code
 pip install -r requirements.txt
+Configure database in config.yaml
 
+Ensure PostgreSQL is running
 
+▶️ Running the Pipeline
+Full Pipeline Execution
 
+bash
+Copy code
+python scripts/pipeline_orchestrator.py
+Individual Steps
 
+bash
+Copy code
+python scripts/data_generation/generate_data.py
+python scripts/ingestion/ingest_to_staging.py
+python scripts/transformation/staging_to_production.py
+python scripts/transformation/load_warehouse.py
+python scripts/transformation/generate_analytics.py
+🧪 Running Tests
+bash
+Copy code
+python scripts/run_tests.py
+or
 
-Setup PostgreSQL database (local or Docker)
+bash
+Copy code
+pytest tests/ -v
+📊 Dashboard Access
+Power BI File: dashboards/powerbi/ecommerce_analytics.pbix
 
+Screenshots: dashboards/screenshots/
 
+🗄 Database Schemas
+Staging Schema
+staging.customers
 
-Run setup script:
+staging.products
 
+staging.transactions
 
+staging.transaction_items
 
-bash setup.sh
+Production Schema
+production.customers
 
+production.products
 
+production.transactions
 
+production.transaction_items
 
+Warehouse Schema
+warehouse.dim_customers
 
-Install BI Tool:
+warehouse.dim_products
 
+warehouse.dim_date
 
+warehouse.dim_payment_method
 
-Tableau Public OR
+warehouse.fact_sales
 
+warehouse.agg_daily_sales
 
+warehouse.agg_product_performance
 
-Power BI Desktop
+warehouse.agg_customer_metrics
 
+📈 Key Insights from Analytics
+Electronics category generates the highest revenue
 
+Revenue shows steady growth across 2024
 
-Database Configuration
+VIP customers contribute a major portion of total revenue
 
+Top 5 states account for majority of sales
 
+Online payment methods dominate transactions
 
-Database Name: ecommerce\_db
+⚠️ Challenges & Solutions
+Challenge	Solution
+PostgreSQL connection issues	Used Docker & proper config
+Data duplication	Implemented idempotent transformations
+Slow queries	Added indexes & aggregate tables
+Scheduling reliability	Lock-file based scheduler
+Monitoring complexity	Centralized monitoring report
 
+🚀 Future Enhancements
+Real-time streaming with Apache Kafka
 
+Cloud deployment (AWS / Azure / GCP)
 
-Schemas:
+ML-based demand forecasting
 
+Real-time alerting system
 
-
-staging – Raw ingested data
-
-
-
-production – Cleaned and validated data
-
-
-
-warehouse – Dimensional warehouse
-
-
-
-Configuration Management
-
-
-
-Environment variables are managed via .env
-
-
-
-Configuration files stored in config/config.yaml
-
-
-
-Sensitive credentials are never hardcoded
-
-
-
-
-
-✔️ This satisfies:
-
-\- Prerequisites
-
-\- Installation
-
-\- DB setup
-
-\- Security practices
-
-
-
----
-
-# 
-## Docker Setup
-The project includes Docker Compose configuration for PostgreSQL and pipeline services.
-Database schemas are automatically initialized on first startup.
-
-
+📞 Contact
+Name: Siri Durga
+Roll Number: 23A91A0516
+Email: your-email@example.com
