@@ -69,9 +69,12 @@ def start_scheduler():
     logging.info("Scheduler started")
     schedule.every().day.at(RUN_TIME).do(run_pipeline)
 
-    while True:
-        schedule.run_pending()
-        time.sleep(30)
+    try:
+        while True:
+            schedule.run_pending()
+            time.sleep(30)
+    except KeyboardInterrupt:
+        logging.info("Scheduler stopped manually")
 
 if __name__ == "__main__":
     start_scheduler()
