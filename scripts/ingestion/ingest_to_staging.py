@@ -1,144 +1,116 @@
 import os
-import json
-import time
-import logging
 import psycopg2
-from datetime import datetime
-from dotenv import load_dotenv
-
-# --------------------------------------------------
-# Load environment variables
-# --------------------------------------------------
-load_dotenv()
+import csv
 
 DB_CONFIG = {
-    "host": os.getenv("DB_HOST", "localhost"),
-    "port": os.getenv("DB_PORT", "5432"),
-    "dbname": os.getenv("DB_NAME", "ecommerce_db"),
-    "user": os.getenv("DB_USER", "postgres"),
-    "password": os.getenv("DB_PASSWORD", "postgres")
+    "host": "localhost",
+    "port": "5432",
+    "dbname": "ecommerce",
+    "user": "postgres",
+    "password": "postgres"
 }
 
-RAW_DATA_PATH = "data/raw"
-STAGING_SCHEMA = "staging"
+DATA_PATH = "data/raw"
 
-TABLE_FILES = {
-    "customers": "customers.csv",
-    "products": "products.csv",
-    "transactions": "transactions.csv",
-    "transaction_items": "transaction_items.csv"
+TABLES = {
+    "customers": {
+        "file": "customers.csv",
+        "ddl": """
+            CREATE TABLE IF NOT EXISTS public.customers (
+                customer_id VARCHAR PRIMARY KEY,
+                first_name VARCHAR,
+                last_name VARCHAR,
+                email VARCHAR,
+                phone VARCHAR,
+                registration_date DATE,
+                city VARCHAR,
+                state VARCHAR,
+                country VARCHAR,
+                age_group VARCHAR
+            );
+        """
+    },
+    "products": {
+        "file": "products.csv",
+        "ddl": """
+            CREATE TABLE IF NOT EXISTS public.products (
+                product_id VARCHAR PRIMARY KEY,
+                product_name VARCHAR,
+                category VARCHAR,
+                sub_category VARCHAR,
+                price NUMERIC,
+                cost NUMERIC,
+                brand VARCHAR,
+                stock_quantity INTEGER,
+                supplier_id VARCHAR
+            );
+        """
+    },
+    "transactions": {
+        "file": "transactions.csv",
+        "ddl": """
+            CREATE TABLE IF NOT EXISTS public.transactions (
+                transaction_id VARCHAR PRIMARY KEY,
+                customer_id VARCHAR,
+                transaction_date DATE,
+                transaction_time TIME,
+                payment_method VARCHAR,
+                shipping_address VARCHAR,
+                total_amount NUMERIC
+            );
+        """
+    },
+    "transaction_items": {
+        "file": "transaction_items.csv",
+        "ddl": """
+            CREATE TABLE IF NOT EXISTS public.transaction_items (
+                item_id VARCHAR PRIMARY KEY,
+                transaction_id VARCHAR,
+                product_id VARCHAR,
+                quantity INTEGER,
+                unit_price NUMERIC,
+                discount_percentage NUMERIC,
+                line_total NUMERIC,
+                cost NUMERIC
+            );
+        """
+    }
 }
 
-SUMMARY_PATH = "data/staging/ingestion_summary.json"
-LOG_FILE = f"logs/ingestion_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
-
-os.makedirs("logs", exist_ok=True)
-os.makedirs("data/staging", exist_ok=True)
-
-logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
-# --------------------------------------------------
 def get_connection():
     return psycopg2.connect(**DB_CONFIG)
 
-# --------------------------------------------------
-def copy_csv_to_table(cursor, table_name, csv_file):
-    columns = {
-        "customers": """
-            customer_id, first_name, last_name, email, phone,
-            registration_date, city, state, country, age_group
-        """,
-        "products": """
-            product_id, product_name, category, sub_category,
-            price, cost, brand, stock_quantity, supplier_id
-        """,
-        "transactions": """
-            transaction_id, customer_id, transaction_date,
-            transaction_time, payment_method, shipping_address, total_amount
-        """,
-        "transaction_items": """
-            item_id, transaction_id, product_id, quantity,
-            unit_price, discount_percentage, line_total
+def load_table(cursor, table_name, config):
+    print(f"Loading {table_name}...")
+
+    cursor.execute(config["ddl"])
+    cursor.execute(f"TRUNCATE TABLE public.{table_name}")
+
+    file_path = os.path.join(DATA_PATH, config["file"])
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        headers = next(reader)
+
+        insert_sql = f"""
+            INSERT INTO public.{table_name} ({",".join(headers)})
+            VALUES ({",".join(["%s"] * len(headers))})
         """
-    }
 
-    copy_sql = f"""
-        COPY {STAGING_SCHEMA}.{table_name} ({columns[table_name]})
-        FROM STDIN
-        WITH (
-            FORMAT CSV,
-            HEADER TRUE,
-            DELIMITER ',',
-            QUOTE '\"'
-        )
-    """
+        for row in reader:
+            cursor.execute(insert_sql, row)
 
-    with open(csv_file, "r", encoding="utf-8") as f:
-        cursor.copy_expert(copy_sql, f)
+def main():
+    conn = get_connection()
+    cur = conn.cursor()
 
-# --------------------------------------------------
-def ingest():
-    start_time = time.time()
-    summary = {
-        "ingestion_timestamp": datetime.utcnow().isoformat(),
-        "tables_loaded": {},
-        "total_execution_time_seconds": 0
-    }
+    for table, config in TABLES.items():
+        load_table(cur, table, config)
 
-    conn = None
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
-        conn.autocommit = False
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("✅ Ingestion completed successfully")
 
-        # Truncate tables
-        for table in TABLE_FILES:
-            cursor.execute(f"TRUNCATE TABLE {STAGING_SCHEMA}.{table}")
-            logging.info(f"Truncated {table}")
-
-        # Load each table
-        for table, file in TABLE_FILES.items():
-            path = os.path.join(RAW_DATA_PATH, file)
-
-            copy_csv_to_table(cursor, table, path)
-
-            cursor.execute(f"SELECT COUNT(*) FROM {STAGING_SCHEMA}.{table}")
-            rows = cursor.fetchone()[0]
-
-            summary["tables_loaded"][f"{STAGING_SCHEMA}.{table}"] = {
-                "rows_loaded": rows,
-                "status": "success",
-                "error_message": None
-            }
-
-        conn.commit()
-
-    except Exception as e:
-        if conn:
-            conn.rollback()
-
-        for table in TABLE_FILES:
-            summary["tables_loaded"].setdefault(
-                f"{STAGING_SCHEMA}.{table}",
-                {
-                    "rows_loaded": 0,
-                    "status": "failed",
-                    "error_message": str(e)
-                }
-            )
-
-    finally:
-        if conn:
-            conn.close()
-
-        summary["total_execution_time_seconds"] = round(time.time() - start_time, 2)
-        with open(SUMMARY_PATH, "w") as f:
-            json.dump(summary, f, indent=4)
-
-# --------------------------------------------------
 if __name__ == "__main__":
-    ingest()
+    main()
