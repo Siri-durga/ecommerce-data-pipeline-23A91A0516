@@ -1,0 +1,42 @@
+{
+    "monitoring_timestamp": "2025-12-25T12:55:54.320544",
+    "pipeline_health": "critical",
+    "checks": {
+        "database_connectivity": {
+            "status": "ok",
+            "response_time_ms": 31.03
+        },
+        "data_freshness": {
+            "status": "critical",
+            "warehouse_latest_record": "2024-12-31 00:00:00",
+            "max_lag_hours": 8628.93
+        },
+        "data_volume_anomalies": {
+            "status": "critical",
+            "expected_range": "N/A",
+            "actual_count": 0,
+            "anomaly_detected": true,
+            "anomaly_type": "no_data"
+        },
+        "data_quality": {
+            "status": "ok",
+            "quality_score": 100,
+            "null_violations": 0
+        }
+    },
+    "alerts": [
+        {
+            "severity": "critical",
+            "check": "data_freshness",
+            "message": "Warehouse data is stale (>24 hours)",
+            "timestamp": "2025-12-25T12:55:54.351571"
+        },
+        {
+            "severity": "critical",
+            "check": "data_volume_anomalies",
+            "message": "No transactions found in last 30 days",
+            "timestamp": "2025-12-25T12:55:54.357778"
+        }
+    ],
+    "overall_health_score": 55
+}
