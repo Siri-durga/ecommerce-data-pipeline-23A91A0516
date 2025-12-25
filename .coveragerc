@@ -2,3 +2,5 @@
 omit =
     scripts/run_tests.py
     scripts/scheduler.py
+    scripts/cleanup_old_data.py
+    scripts/monitoring/*
