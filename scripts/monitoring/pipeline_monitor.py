@@ -54,6 +54,8 @@ def main():
     }
 
     overall_score = 100
+    conn = None
+
 
     # DATABASE CONNECTIVITY
     try:
@@ -74,7 +76,7 @@ def main():
             "timestamp": datetime.utcnow().isoformat()
         })
         overall_score -= 30
-        conn = None
+        
 
     # DATA FRESHNESS
     if conn:
