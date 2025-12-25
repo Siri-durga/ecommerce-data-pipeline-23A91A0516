@@ -9,6 +9,7 @@
 # \*\*Submission Date:\*\* 29 Dec 2025  
 
 # 
+![CI Status](https://github.com/Siri-durga/ecommerce-data-pipeline-23A91A0516/actions/workflows/ci.yml/badge.svg)
 
 📌 Project Architecture
 This project implements an end-to-end E-Commerce Data Analytics Pipeline that processes raw transactional data into analytics-ready datasets and interactive BI dashboards.
