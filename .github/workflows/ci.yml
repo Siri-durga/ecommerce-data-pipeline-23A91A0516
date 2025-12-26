@@ -54,8 +54,7 @@ jobs:
           DB_USER: test_user
           DB_PASSWORD: test_password
         run: |
-          pytest tests/ -v --cov=scripts --cov-report=term
+          pytest tests/ -v --cov=scripts --cov-report=term --cov-fail-under=70
 
-      - name: Enforce coverage threshold
-        run: |
-          coverage report --fail-under=70
+
+      
