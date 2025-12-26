@@ -1,30 +1,35 @@
+import pytest
+import os
 import psycopg2
+
+pytestmark = pytest.mark.skipif(
+    os.getenv("DB_AVAILABLE", "false") != "true",
+    reason="Database not available"
+)
 
 def get_connection():
     return psycopg2.connect(
-        host="localhost",
-        database="ecommerce",
-        user="postgres",
-        password="postgres"
+        host=os.getenv("DB_HOST", "localhost"),
+        database=os.getenv("DB_NAME", "ecommerce"),
+        user=os.getenv("DB_USER", "postgres"),
+        password=os.getenv("DB_PASSWORD", "postgres")
     )
 
-def test_fact_sales_has_data():
+def test_production_tables_populated():
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) FROM warehouse.fact_sales")
-    count = cur.fetchone()[0]
-    assert count >= 0
+    cur.execute("SELECT COUNT(*) FROM production.transactions")
+    assert cur.fetchone()[0] >= 0
     conn.close()
 
-def test_no_orphan_customer_keys():
+def test_no_orphan_records():
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
-        SELECT COUNT(*) 
-        FROM warehouse.fact_sales f
-        LEFT JOIN warehouse.dim_customers c
-        ON f.customer_key = c.customer_key
-        WHERE c.customer_key IS NULL
+        SELECT COUNT(*) FROM production.transaction_items ti
+        LEFT JOIN production.transactions t
+        ON ti.transaction_id = t.transaction_id
+        WHERE t.transaction_id IS NULL
     """)
     assert cur.fetchone()[0] == 0
     conn.close()
