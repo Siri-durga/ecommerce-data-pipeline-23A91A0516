@@ -1,106 +1,121 @@
-# \# E-Commerce Data Pipeline Project
+# 🛒 E-Commerce Data Pipeline Project
 
-# 
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 
-# \*\*Student Name:\*\* Durga Lalitha Sri Varshitha  
 
-# \*\*Roll Number:\*\* 23A91A0516
+## 📌 Project Overview
+This project implements an **end-to-end E-Commerce Data Analytics Pipeline** that transforms raw transactional data into **analytics-ready datasets** and **interactive BI dashboards**.  
+It follows modern data engineering practices including ETL pipelines, data warehousing, automation, monitoring, and testing.
 
-# \*\*Submission Date:\*\* 29 Dec 2025  
+---
 
-# 
-![CI Status](https://github.com/Siri-durga/ecommerce-data-pipeline-23A91A0516/actions/workflows/ci.yml/badge.svg)
+## 👩‍🎓 Student Information
+- **Name:** Durga Lalitha Sri Varshitha  
+- **Roll Number:** 23A91A0516  
+- **Submission Date:** 26 Dec 2025  
+- **Email:** 23A91A0516@aec.edu.in  
 
-📌 Project Architecture
-This project implements an end-to-end E-Commerce Data Analytics Pipeline that processes raw transactional data into analytics-ready datasets and interactive BI dashboards.
+---
 
-Data Flow:
+## 🏗️ Project Architecture
 
-graphql
-Copy code
+### Data Flow
 Raw CSV Data
-   ↓
+↓
 Staging Schema (PostgreSQL)
-   ↓
+↓
 Production Schema (Cleaned & Normalized)
-   ↓
+↓
 Warehouse Schema (Star Schema)
-   ↓
+↓
 Analytics Queries & Aggregates
-   ↓
+↓
 BI Dashboard (Power BI)
-🛠 Technology Stack
-Layer	Technology
-Data Generation	Python, Faker
-Database	PostgreSQL
-ETL / Transformation	Python (Pandas, psycopg2)
-Orchestration	Python Scheduler
-Monitoring	Python (Custom Monitoring Scripts)
-BI Tool	Power BI Desktop
-Containerization	Docker
-Testing	Pytest, pytest-cov
 
-📁 Project Structure
-kotlin
+yaml
 Copy code
+
+---
+
+## 🛠️ Technology Stack
+
+| Layer | Technology |
+|------|-----------|
+| Data Generation | Python, Faker |
+| Database | PostgreSQL |
+| ETL / Transformation | Python (Pandas, psycopg2) |
+| Orchestration | Python Scheduler |
+| Monitoring | Python (Custom Monitoring Scripts) |
+| BI Tool | Power BI Desktop |
+| Containerization | Docker |
+| Testing | Pytest, pytest-cov |
+
+---
+
+## 📁 Project Structure
 ecommerce-data-pipeline/
 ├── data/
-│   ├── raw/
-│   ├── staging/
-│   └── processed/
+│ ├── raw/
+│ ├── staging/
+│ └── processed/
 ├── scripts/
-│   ├── data_generation/
-│   ├── ingestion/
-│   ├── transformation/
-│   ├── monitoring/
-│   └── scheduler.py
+│ ├── data_generation/
+│ ├── ingestion/
+│ ├── transformation/
+│ ├── monitoring/
+│ └── scheduler.py
 ├── sql/
-│   ├── ddl/
-│   └── queries/
+│ ├── ddl/
+│ └── queries/
 ├── dashboards/
-│   ├── powerbi/
-│   └── screenshots/
+│ ├── powerbi/
+│ └── screenshots/
 ├── tests/
 ├── docs/
 ├── logs/
 └── README.md
-⚙️ Setup Instructions
-Install Python 3.10+
 
-Install PostgreSQL
-
-Clone repository
-
-bash
+yaml
 Copy code
+
+---
+
+## ⚙️ Setup Instructions
+
+### Prerequisites
+- Python **3.10+**
+- PostgreSQL
+- Docker (optional but recommended)
+
+### Installation
+```bash
 git clone <repo-url>
 cd ecommerce-data-pipeline
-Install dependencies
-
-bash
-Copy code
 pip install -r requirements.txt
-Configure database in config.yaml
+```
 
-Ensure PostgreSQL is running
+Configuration
+Update database credentials in config.yaml
+
+Ensure PostgreSQL service is running
 
 ▶️ Running the Pipeline
 Full Pipeline Execution
-
 bash
 Copy code
 python scripts/pipeline_orchestrator.py
 Individual Steps
-
-bash
+```bash
 Copy code
 python scripts/data_generation/generate_data.py
 python scripts/ingestion/ingest_to_staging.py
 python scripts/transformation/staging_to_production.py
 python scripts/transformation/load_warehouse.py
 python scripts/transformation/generate_analytics.py
+```
+
 🧪 Running Tests
-bash
+```bash
 Copy code
 python scripts/run_tests.py
 or
@@ -108,12 +123,14 @@ or
 bash
 Copy code
 pytest tests/ -v
+```
+
 📊 Dashboard Access
 Power BI File: dashboards/powerbi/ecommerce_analytics.pbix
 
-Screenshots: dashboards/screenshots/
+Dashboard Screenshots: dashboards/screenshots/
 
-🗄 Database Schemas
+🗄️ Database Schemas
 Staging Schema
 staging.customers
 
@@ -152,32 +169,34 @@ warehouse.agg_customer_metrics
 📈 Key Insights from Analytics
 Electronics category generates the highest revenue
 
-Revenue shows steady growth across 2024
+Revenue shows steady growth throughout 2024
 
-VIP customers contribute a major portion of total revenue
+VIP customers contribute a major share of total revenue
 
-Top 5 states account for majority of sales
+Top 5 states account for the majority of sales
 
 Online payment methods dominate transactions
 
 ⚠️ Challenges & Solutions
 Challenge	Solution
-PostgreSQL connection issues	Used Docker & proper config
-Data duplication	Implemented idempotent transformations
-Slow queries	Added indexes & aggregate tables
+PostgreSQL connection issues	Dockerized setup & proper configuration
+Data duplication	Idempotent transformation logic
+Slow queries	Indexing and aggregate tables
 Scheduling reliability	Lock-file based scheduler
-Monitoring complexity	Centralized monitoring report
+Monitoring complexity	Centralized monitoring reports
 
 🚀 Future Enhancements
-Real-time streaming with Apache Kafka
+Real-time streaming using Apache Kafka
 
 Cloud deployment (AWS / Azure / GCP)
 
-ML-based demand forecasting
+Machine Learning based demand forecasting
 
-Real-time alerting system
+Real-time alerting and anomaly detection
 
 📞 Contact
-Name: Siri Durga
-Roll Number: 23A91A0516
-Email: your-email@example.com
+Durga Lalitha Sri Varshitha
+📧 23A91A0516@aec.edu.in
+🎓 Roll Number: 23A91A0516
+
+
