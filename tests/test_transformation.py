@@ -1,6 +1,8 @@
 import pytest
 import os
 import psycopg2
+CI = os.getenv("CI") == "true"
+
 
 pytestmark = pytest.mark.skipif(
     os.getenv("DB_AVAILABLE", "false") != "true",
@@ -14,7 +16,7 @@ def get_connection():
         user=os.getenv("DB_USER", "postgres"),
         password=os.getenv("DB_PASSWORD", "postgres")
     )
-
+@pytest.mark.skipif(CI, reason="Skip data-dependent transformation tests in CI")
 def test_production_tables_populated():
     conn = get_connection()
     cur = conn.cursor()

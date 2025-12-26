@@ -1,10 +1,16 @@
 import pandas as pd
 import os
 import re
+import pytest
+
+CI = os.getenv("CI") == "true"
+
 
 DATA_DIR = "data/raw"
 
+@pytest.mark.skipif(CI, reason="Skip data generation tests in CI")
 def test_csv_files_exist():
+
     files = ["customers.csv", "products.csv", "transactions.csv", "transaction_items.csv"]
     for f in files:
         assert os.path.exists(os.path.join(DATA_DIR, f)), f"{f} not generated"

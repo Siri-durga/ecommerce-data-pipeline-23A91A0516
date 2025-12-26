@@ -47,6 +47,7 @@ jobs:
 
       - name: Run unit tests
         env:
+          CI: true
           DB_HOST: localhost
           DB_PORT: 5432
           DB_NAME: ecommerce_db_test
