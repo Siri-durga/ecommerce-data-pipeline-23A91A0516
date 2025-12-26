@@ -8,12 +8,11 @@ from datetime import datetime, timedelta
 OUTPUT_FILE = "data/processed/monitoring_report.json"
 
 DB_CONFIG = {
-    "host": "localhost",
-    "database": "ecommerce",
-    "user": "postgres",
-    "password": "postgres"
+    "host": os.getenv("DB_HOST", "localhost"),
+    "database": os.getenv("DB_NAME", "ecommerce"),
+    "user": os.getenv("DB_USER", "postgres"),
+    "password": os.getenv("DB_PASSWORD", "postgres")
 }
-
 def db_connect():
     start = time.time()
     conn = psycopg2.connect(**DB_CONFIG)
