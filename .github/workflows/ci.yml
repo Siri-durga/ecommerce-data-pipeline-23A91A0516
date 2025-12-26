@@ -38,24 +38,14 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pytest pytest-cov flake8 psycopg2-binary
 
-      - name: Lint code (flake8)
-        run: |
-          flake8 scripts || true
-
-      - name: Create database schemas
+      - name: Create staging schema
         env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: ecommerce_db_test
-          DB_USER: test_user
-          DB_PASSWORD: test_password
+          PGPASSWORD: test_password
         run: |
-          psql -h localhost -U test_user -d ecommerce_db_test -f sql/ddl/create_staging_schema.sql || true
-          psql -h localhost -U test_user -d ecommerce_db_test -f sql/ddl/create_warehouse_schema.sql || true
+          psql -h localhost -U test_user -d ecommerce_db_test -f sql/ddl/create_staging_schema.sql
 
-      - name: Run tests with coverage
+      - name: Run unit tests
         env:
           DB_HOST: localhost
           DB_PORT: 5432

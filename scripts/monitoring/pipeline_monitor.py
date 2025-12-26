@@ -14,7 +14,7 @@ DB_CONFIG = {
     "password": "postgres"
 }
 
-def get_connection():
+def db_connect():
     start = time.time()
     conn = psycopg2.connect(**DB_CONFIG)
     response_time = (time.time() - start) * 1000
